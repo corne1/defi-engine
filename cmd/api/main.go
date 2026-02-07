@@ -14,6 +14,7 @@ import (
 
 func main() {
 	cfg := config.Load()
+	logger := logging.New(cfg.Env)
 
 	ctx, stop := signal.NotifyContext(
 		context.Background(),

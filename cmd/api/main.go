@@ -10,6 +10,7 @@ import (
 	"time"
 	"github.com/corne1/defi-engine/internal/app/config"
 	"github.com/corne1/defi-engine/internal/observability/logging"
+	"github.com/corne1/defi-engine/internal/storage/postgres"
 )
 
 func main() {
@@ -22,6 +23,15 @@ func main() {
 		syscall.SIGTERM,
 	)
 	defer stop()
+
+	db, err := postgres.New(ctx, cfg.DB)
+	if err != nil {
+		logger.Error("failed to connect to postgres", "err", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	logger.Info("postgres connected")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {

@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -27,6 +29,8 @@ type DBConfig struct {
 }
 
 func Load() *Config {
+	_ = godotenv.Load() // загружаем .env, если есть
+
 	cfg := &Config{
 		Env: getEnv("ENV", "local"),
 		API: APIConfig{

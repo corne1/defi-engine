@@ -4,7 +4,8 @@ import (
 	"log"
 	"os"
 	"strconv"
-
+	"fmt"
+	
 	"github.com/joho/godotenv"
 )
 
@@ -65,4 +66,16 @@ func getEnvAsInt(key string, defaultValue int) int {
 		return i
 	}
 	return defaultValue
+}
+
+func (db DBConfig) DSN() string {
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s?sslmode=%s",
+		db.User,
+		db.Password,
+		db.Host,
+		db.Port,
+		db.Name,
+		db.SSLMode,
+	)
 }

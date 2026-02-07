@@ -7,10 +7,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"strconv"
 	"time"
+	"github.com/corne1/defi-engine/internal/app/config"
 )
 
 func main() {
+	cfg := config.Load()
+
 	ctx, stop := signal.NotifyContext(
 		context.Background(),
 		os.Interrupt,
@@ -25,7 +29,7 @@ func main() {
 	})
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + strconv.Itoa(cfg.API.Port),
 		Handler: mux,
 	}
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,6 +9,7 @@ import (
 	"strconv"
 	"time"
 	"github.com/corne1/defi-engine/internal/app/config"
+	"github.com/corne1/defi-engine/internal/observability/logging"
 )
 
 func main() {
@@ -35,21 +35,23 @@ func main() {
 	}
 
 	go func() {
-		log.Println("API started on :8080")
+		logger.Info("api started", "port", cfg.API.Port)
+
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			logger.Error("server error", "err", err)
+			os.Exit(1)
 		}
 	}()
 
 	<-ctx.Done()
-	log.Println("shutting down...")
+	logger.Info("shutting down...")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		log.Println("server shutdown failed:", err)
+		logger.Error("server shutdown failed", "err", err)
 	}
 
-	log.Println("server exited properly")
+	logger.Info("server exited properly")
 }
